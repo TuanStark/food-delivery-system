@@ -1,0 +1,43 @@
+{
+  "name": "booking-microservice-nestjs",
+  "version": "1.0.0",
+  "description": "NestJS Monorepo with Database per Service",
+  "scripts": {
+    "start": "nest start",
+    "start:dev": "nest start --watch",
+    "build": "nest build",
+    "build:all": "nest build api-gateway && nest build user-service && nest build order-service",
+    
+    "prisma:generate:user": "npx prisma generate --schema=apps/user-service/prisma/schema.prisma",
+    "prisma:generate:order": "npx prisma generate --schema=apps/order-service/prisma/schema.prisma",
+    "prisma:generate:payment": "npx prisma generate --schema=apps/payment-service/prisma/schema.prisma",
+    
+    "prisma:migrate:user": "npx prisma migrate dev --schema=apps/user-service/prisma/schema.prisma",
+    "prisma:migrate:order": "npx prisma migrate dev --schema=apps/order-service/prisma/schema.prisma",
+    
+    "db:push:user": "npx prisma db push --schema=apps/user-service/prisma/schema.prisma"
+  },
+  "workspaces": [
+    "apps/*",
+    "libs/*"
+  ],
+  "dependencies": {
+    "@nestjs/common": "^10.4.0",
+    "@nestjs/core": "^10.4.0",
+    "@nestjs/microservices": "^10.4.0",
+    "@nestjs/platform-express": "^10.4.0",
+    "@prisma/client": "^6.0.0",
+    "reflect-metadata": "^0.2.0",
+    "rxjs": "^7.8.1"
+  },
+  "devDependencies": {
+    "@nestjs/cli": "^10.4.0",
+    "@nestjs/schematics": "^10.2.0",
+    "prisma": "^6.0.0",
+    "typescript": "^5.5.0",
+    "@types/node": "^20.0.0"
+  },
+  "prisma": {
+    "schema": "apps/user-service/prisma/schema.prisma"
+  }
+}
