@@ -1,0 +1,19 @@
+#!/usr/bin/env bash
+set -e
+
+psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" <<-EOSQL
+DO
+$$
+BEGIN
+   IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = '${AUTH_DB_USER}') THEN
+      EXECUTE format('CREATE ROLE %I LOGIN PASSWORD %L', '${AUTH_DB_USER}', '${AUTH_DB_PASSWORD}');
+   END IF;
+END
+$$;
+
+SELECT format('CREATE DATABASE %I OWNER %I', '${AUTH_DB_NAME}', '${AUTH_DB_USER}')
+WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = '${AUTH_DB_NAME}')
+\gexec
+
+GRANT ALL PRIVILEGES ON DATABASE ${AUTH_DB_NAME} TO ${AUTH_DB_USER};
+EOSQL

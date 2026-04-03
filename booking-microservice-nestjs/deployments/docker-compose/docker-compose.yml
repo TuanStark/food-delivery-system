@@ -37,11 +37,11 @@ services:
 
 
     #######################################################
-    #  Postgress
+    #  Postgress (shared instance for all microservices)
     #######################################################
   postgres:
     container_name: postgres
-    image: postgres:latest
+    image: postgres:16
     restart: unless-stopped
     ports:
       - '${POSTGRES_PORT:-5432}:5432'
@@ -49,8 +49,14 @@ services:
       - POSTGRES_USER=${POSTGRES_USER:-postgres}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-postgres}
       - POSTGRES_DB=${POSTGRES_DB:-postgres}
+      # AUTH_DB_* are consumed by init script to bootstrap auth_db/auth_user only.
+      # Add ORDER_DB_*, PAYMENT_DB_*, etc. in separate init scripts for other services.
+      - AUTH_DB_NAME=${AUTH_DB_NAME:-auth_db}
+      - AUTH_DB_USER=${AUTH_DB_USER:-auth_user}
+      - AUTH_DB_PASSWORD=${AUTH_DB_PASSWORD:-auth_password}
     volumes:
       - postgres-data:/var/lib/postgresql/data
+      - ./../configs/postgres/init:/docker-entrypoint-initdb.d
     networks:
       - booking
 
